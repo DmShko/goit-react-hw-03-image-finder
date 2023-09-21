@@ -16,7 +16,7 @@ export class Searchbar extends Component {
     formSubmit = (evt) => {
 
         evt.preventDefault();
-        this.props.onSubmit(this.state.imputValue);
+        if(this.state.imputValue.length !== 0) this.props.onSubmit('inputData', this.state.imputValue);
     }
 
     render(){
