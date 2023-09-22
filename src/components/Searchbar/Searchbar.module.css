@@ -1,0 +1,22 @@
+.searchbar {
+
+  position: fixed;
+  top: 0;
+  left: 20px;
+  right: 20px;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+
+  padding: 5px 0;
+  border: 2px solid rgb(204, 204, 204);
+  border-radius: 6px;
+  /* background-color: rgba(4, 0, 255, 0.404); */
+  backdrop-filter: blur(5px);
+}
+
+.button {
+    border: none;
+    background-color: white;
+}

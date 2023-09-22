@@ -1,3 +1,11 @@
 .item {
-    width: 250px;
+
+    list-style: none;
+}
+
+.img {
+
+    height: 200px;
+    width: calc((100vw - 200px) / 4 );
+
 }

@@ -15,37 +15,46 @@ export class App extends Component {
 
   state = {
 
-    pageCounter: 1,
+    pageCounter: 0,
     totalH: 0, 
     quantityCard: 12,
     checkData: "",
     inputData: "",
     cards: [],
     key: true,
-    viewKey: true,
     temporary: undefined,
     fillingLevel: function () { return Math.floor(this.totalH / this.quantityCard)},
-    activeButton: true,
+    activeButton: false,
 
   }
-
-  // componentDidMount() {
-
-  //   this.setState({viewKey: this.loadPagesControl(this.state.checkData)})
-    
-  // }
-
+  
   componentDidUpdate(prevProps, prevState) {
 
-    if(prevState.key !== this.state.key) this.setState({viewKey: this.state.key,});
-
-    if(prevState.pageCounter !== this.state.pageCounter) this.setState({pageCounter: this.state.pageCounter,});
-    
-    // console.log(`${prevState.inputData} ${this.state.inputData}`);
-    if(prevState.inputData !== this.state.inputData) this.request(this.state.inputData);
-
+    if((prevState.pageCounter !== this.state.pageCounter) && ( this.state.pageCounter !== 0)){ 
+      console.log(this.state.pageCounter);
+      this.request(this.state.inputData)
+    } 
+       
+    if(prevState.inputData !== this.state.inputData) {
+      
+      this.setState(({
+        pageCounter: 0,
+        totalH: 0, 
+        quantityCard: 12,
+        cards: [],
+        key: true,
+        temporary: undefined,
+        fillingLevel: function () { return Math.floor(this.totalH / this.quantityCard)},
+        activeButton: false,
+      }))
+      
+      this.setState({key:  this.loadPagesControl(this.state.inputData),
+        activeButton: true,
+      });
+      
+    }   
   }
- 
+    
   changeState = (name, data) => {
     this.setState({[name]: data});
   }
@@ -70,16 +79,17 @@ export class App extends Component {
         // console.log(counter);
         return responce;
     });
+
   }
 
   // "data.totalHits" control
   loadPagesControl = (data) => {
-
+    
     this.changeState('quantityCard', 12);
    
     //if the request data is repeate
     if(this.state.checkData === data) {
-      console.log("!");
+      console.log("==");
       // "elementsSet.key" - open/close access to calc loaded pages. When total quantity loaded images >= "data.totalHits",
       // "elementsSet.fillingLevel" will not accumulate further and cause an error.
       if(this.state.key) { 
@@ -124,7 +134,7 @@ export class App extends Component {
     }
     // if the request data isn't repeate
     else {
-      console.log("!!");
+      console.log("!=");
       this.setState(value => ({key: value.key || true}));
       // this.changeState('key', true);
       this.changeState('temporary', undefined);
@@ -138,16 +148,15 @@ export class App extends Component {
   }
 
   request = async (data) => {
-   
-    this.loadPagesControl(data);
-    
+   console.log(`${this.state.key} ${this.state.quantityCard}`);
     //'viewKey' - dont't output content, if when total quantity loaded images >= "data.totalHits" 
     // and output content, if < "data.totalHits"
-    if(this.state.viewKey && this.state.quantityCard !== 0) {
-   
+    if(this.state.key && this.state.quantityCard !== 0) {
+     
+     
       await this.getDataFromApi(data, this.state.pageCounter, this.state.quantityCard).then(responce => {
         
-        // console.log(responce);
+        console.log(responce);
         if(responce.data.hits.length !== 0) {
 
           if(this.state.pageCounter === 1) {
@@ -161,7 +170,6 @@ export class App extends Component {
             this.getCards(responce.data.hits);
           }
           
-
           return;
 
         } 
@@ -174,15 +182,17 @@ export class App extends Component {
   }
 
   render() {
-    console.log(this.state.cards);
+    
+    // console.log(this.state.cards);
     console.log(this.state.key);
+    
     // console.log(this.state.inputData);
     return(
 
       <>
         <Searchbar onSubmit={this.changeState}/>
         <ImageGallery cardData={this.state.cards}/> 
-        {this.state.activeButton && <Button addImages={this.request} addInput={this.state.inputData}/>}
+        {this.state.activeButton && <Button addImages={this.loadPagesControl} addInput={this.state.inputData}/>}
         <Modal/>
         <Loader/>
       </>

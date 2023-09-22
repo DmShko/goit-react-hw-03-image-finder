@@ -16,6 +16,7 @@ export class Searchbar extends Component {
     formSubmit = (evt) => {
 
         evt.preventDefault();
+        this.props.onSubmit('pageCounter', 0)
         if(this.state.imputValue.length !== 0) this.props.onSubmit('inputData', this.state.imputValue);
     }
 

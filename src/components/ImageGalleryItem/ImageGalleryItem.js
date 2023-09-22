@@ -6,7 +6,7 @@ export class ImageGalleryItem extends Component {
     render(){
         return(
             <li className={it.item}>
-                <img src={this.props.dataItem.webformatURL} alt="" width={250} height={200}/>
+                <img className={it.img} src={this.props.dataItem.webformatURL} alt="" />
             </li>
         )
     }
