@@ -13,7 +13,7 @@ export class Button extends Component {
         return(
 
             <div className={b.buttonContainer}>
-                <button type="button" className={b.button} onClick={this.loadMore}>Load more</button>
+                <button type="button" id="loadButton" className={b.button} onClick={this.loadMore}>Load more</button>
             </div>
 
         )

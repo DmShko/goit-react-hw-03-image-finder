@@ -17,21 +17,70 @@ export class App extends Component {
 
     pageCounter: 0,
     totalH: 0, 
-    quantityCard: 12,
+    quantityCard: 200,
     checkData: "",
     inputData: "",
     cards: [],
     key: true,
+    open: false,
     temporary: undefined,
     fillingLevel: function () { return Math.floor(this.totalH / this.quantityCard)},
     activeButton: false,
+    load: false,
+    cardID: "",
 
   }
   
   componentDidUpdate(prevProps, prevState) {
 
+    if(prevState.cards.length !== this.state.cards.length) {
+      this.setState({load:  false, activeButton: true,})
+      // console.log(this.state.cards[199].id);
+      // this.autoScroll(this.state.cards[199].id);
+    };
+
     if((prevState.pageCounter !== this.state.pageCounter) && ( this.state.pageCounter !== 0)){ 
-      console.log(this.state.pageCounter);
+   
+      this.setState({load:  true,
+      });
+
+      // add one itteration
+      if(this.state.pageCounter === this.state.fillingLevel() + 1 && this.state.totalH > this.state.quantityCard) {
+      
+        // temporery value for 63's row
+        this.setState(value => ({temporary: value.fillingLevel() + 1}));
+        this.setState(value => ({quantityCard: value.totalH - value.quantityCard * value.fillingLevel()}));
+      } 
+
+      // if elementsSet.totalH <= elementsSet.quantityCard
+      if(this.state.pageCounter === this.state.fillingLevel() + 2 && this.state.totalH <= this.state.quantityCard) {
+        
+        // temporery value for 63's row
+        this.setState(value => ({temporary: value.fillingLevel()}));
+        
+      }
+
+      // control, when total quantity loaded images >= "data.totalHits"
+      if(this.state.pageCounter > this.state.temporary) {
+        
+        this.changeState('quantityCard', 200);
+        
+        // reset property and output notification
+        // elementsSet.checkData = 0;
+        this.setState(value => ({key: value.key && false}));
+
+        this.setState({load:  false,
+        });
+
+        this.setState({activeButton:  false,
+        });
+
+        
+        // elementsSet.simpleArray.instance.destroy();
+        Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+        return;
+      } 
+
       this.request(this.state.inputData)
     } 
        
@@ -40,23 +89,40 @@ export class App extends Component {
       this.setState(({
         pageCounter: 0,
         totalH: 0, 
-        quantityCard: 12,
+        quantityCard: 200,
         cards: [],
         key: true,
+        open: false,
         temporary: undefined,
         fillingLevel: function () { return Math.floor(this.totalH / this.quantityCard)},
         activeButton: false,
+        load: false,
+        cardID: "",
       }))
       
       this.setState({key:  this.loadPagesControl(this.state.inputData),
-        activeButton: true,
+      });
+
+      this.setState({load:  true,
       });
       
     }   
   }
-    
+
+  autoScroll = (data) => {
+    // get first card on page and set her to top
+     document.getElementById(data).scrollIntoView({
+      block: "end",
+      behavior: "smooth",
+    });
+  }
+
   changeState = (name, data) => {
     this.setState({[name]: data});
+  }
+
+  openModal = (data) => {
+    this.setState(value => ({open:  !value.open, cardID: data,}));
   }
 
   getCards = (parametr) => {
@@ -77,6 +143,7 @@ export class App extends Component {
     let url = `https://pixabay.com/api/?key=${App.API_KEY}&q=${data}&image_type=photo$orientation=horizontal&safesearch=true&page=1&per_page=${quantityCard}&page=${counter}`;
     return await axios.get(url).then(responce => {
         // console.log(counter);
+        
         return responce;
     });
 
@@ -84,12 +151,12 @@ export class App extends Component {
 
   // "data.totalHits" control
   loadPagesControl = (data) => {
-    
-    this.changeState('quantityCard', 12);
+   
+    this.changeState('quantityCard', 200);
    
     //if the request data is repeate
     if(this.state.checkData === data) {
-      console.log("==");
+     
       // "elementsSet.key" - open/close access to calc loaded pages. When total quantity loaded images >= "data.totalHits",
       // "elementsSet.fillingLevel" will not accumulate further and cause an error.
       if(this.state.key) { 
@@ -98,43 +165,14 @@ export class App extends Component {
         this.setState(value => ({pageCounter: value.pageCounter + 1}));
         
       }
-      
-      // add one itteration
-      if(this.state.pageCounter === this.state.fillingLevel() + 1 && this.state.totalH > this.state.quantityCard) {
-
-        // temporery value for 63's row
-        this.setState(value => ({temporary: value.fillingLevel() + 1}));
-        this.setState(value => ({quantityCard: value.totalH - value.quantityCard * value.fillingLevel()}));
-        
-      } 
-
-      // if elementsSet.totalH <= elementsSet.quantityCard
-      if(this.state.pageCounter === this.state.fillingLevel() + 2 && this.state.totalH <= this.state.quantityCard) {
-
-        // temporery value for 63's row
-        this.setState(value => ({temporary: value.fillingLevel()}));
-        
-      }
-
-      // control, when total quantity loaded images >= "data.totalHits"
-      if(this.state.pageCounter > this.state.temporary) {
-        
-        this.setState(value => ({activeButton: !value.activeButton}));
+      console.log(this.state.pageCounter);
+      console.log(this.state.fillingLevel());
     
-        this.changeState('quantityCard', 12);
-        
-        // reset property and output notification
-        // elementsSet.checkData = 0;
-        this.setState(value => ({key: value.key && false}));
       
-        // elementsSet.simpleArray.instance.destroy();
-        Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
-      
-      } 
     }
     // if the request data isn't repeate
     else {
-      console.log("!=");
+     
       this.setState(value => ({key: value.key || true}));
       // this.changeState('key', true);
       this.changeState('temporary', undefined);
@@ -145,10 +183,11 @@ export class App extends Component {
     }
 
     return this.state.key;
+    
   }
 
   request = async (data) => {
-   console.log(`${this.state.key} ${this.state.quantityCard}`);
+  
     //'viewKey' - dont't output content, if when total quantity loaded images >= "data.totalHits" 
     // and output content, if < "data.totalHits"
     if(this.state.key && this.state.quantityCard !== 0) {
@@ -165,11 +204,10 @@ export class App extends Component {
             this.getCards(responce.data.hits);
             
             Notiflix.Notify.info(`Hooray! We found ${responce.data.totalHits} images.`);
-
+            
           } else {
             this.getCards(responce.data.hits);
           }
-          
           return;
 
         } 
@@ -183,18 +221,15 @@ export class App extends Component {
 
   render() {
     
-    // console.log(this.state.cards);
-    console.log(this.state.key);
     
-    // console.log(this.state.inputData);
     return(
 
       <>
         <Searchbar onSubmit={this.changeState}/>
-        <ImageGallery cardData={this.state.cards}/> 
+        <ImageGallery cardData={this.state.cards} openModal={this.openModal}/> 
         {this.state.activeButton && <Button addImages={this.loadPagesControl} addInput={this.state.inputData}/>}
-        <Modal/>
-        <Loader/>
+        {this.state.load && <Loader/>}
+        {this.state.open && <Modal currentState={this.state.cards} imageOpenID={this.state.cardID} onClose={this.openModal}/>}
       </>
             
     )
