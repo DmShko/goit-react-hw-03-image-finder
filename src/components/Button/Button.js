@@ -1,21 +1,24 @@
-import { Component } from "react";
+import { Component } from 'react';
 
-import b from './/Button.module.css'
+import b from './/Button.module.css';
 
 export class Button extends Component {
+  loadMore = () => {
+    this.props.addImages(this.props.addInput);
+  };
 
-    loadMore = () => {
-        
-        this.props.addImages(this.props.addInput)
-    }
-
-    render(){
-        return(
-
-            <div className={b.buttonContainer}>
-                <button type="button" id="loadButton" className={b.button} onClick={this.loadMore}>Load more</button>
-            </div>
-
-        )
-    }
+  render() {
+    return (
+      <div className={b.buttonContainer}>
+        <button
+          type="button"
+          id="loadButton"
+          className={b.button}
+          onClick={this.loadMore}
+        >
+          Load more
+        </button>
+      </div>
+    );
+  }
 }
