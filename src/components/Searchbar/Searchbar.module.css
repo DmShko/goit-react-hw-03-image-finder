@@ -28,9 +28,13 @@
 }
 
 .button {
-    border: none;
-    outline:none;
-    background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border: none;
+  outline:none;
+  background-color: rgb(238, 236, 236);
 }
 
 .input {
@@ -40,5 +44,7 @@
   border: none;
   outline:none;
   padding: 0 5px;
+  background-color: rgb(238, 236, 236);
 
 }
+

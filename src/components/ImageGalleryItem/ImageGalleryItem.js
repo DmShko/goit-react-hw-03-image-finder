@@ -10,7 +10,7 @@ export class ImageGalleryItem extends Component {
    
     render(){
         return(
-            <li className={it.item} id={this.props.dataItem.id} onClick={() => this.clickHandle(this.props.dataItem.id)}>
+            <li className={it.item} onClick={() => this.clickHandle(this.props.dataItem.id)}>
                 <img className={it.img}  src={this.props.dataItem.webformatURL} alt="" />
             </li>
         )

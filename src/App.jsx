@@ -17,7 +17,7 @@ export class App extends Component {
 
     pageCounter: 0,
     totalH: 0, 
-    quantityCard: 200,
+    quantityCard: 12,
     checkData: "",
     inputData: "",
     cards: [],
@@ -32,24 +32,33 @@ export class App extends Component {
   }
   
   componentDidUpdate(prevProps, prevState) {
+   
+    // scroll down, if 'activeButton' change
+    if(prevState.activeButton !== this.state.activeButton) {
+      // scroll only, if 'activeButton' change to 'true', 
+      // because, if 'activeButton' - false, she doesn't exist in DOM!!! It will be error!! 
+      if(this.state.activeButton === true) this.autoScroll('loadButton');
+    }
 
     if(prevState.cards.length !== this.state.cards.length) {
+      
       this.setState({load:  false, activeButton: true,})
-      // console.log(this.state.cards[199].id);
-      // this.autoScroll(this.state.cards[199].id);
     };
 
-    if((prevState.pageCounter !== this.state.pageCounter) && ( this.state.pageCounter !== 0)){ 
-   
-      this.setState({load:  true,
+    if((prevState.pageCounter !== this.state.pageCounter) && (this.state.pageCounter !== 0)){ 
+     
+      // 'activeButton: false', that scroll worked in next event load cards, 
+      // because scroll react on change 'activeButton'
+      this.setState({load:  true, activeButton: false,
       });
-
+     
       // add one itteration
-      if(this.state.pageCounter === this.state.fillingLevel() + 1 && this.state.totalH > this.state.quantityCard) {
+      if(this.state.pageCounter === this.state.fillingLevel() && this.state.totalH > this.state.quantityCard) {
       
         // temporery value for 63's row
         this.setState(value => ({temporary: value.fillingLevel() + 1}));
         this.setState(value => ({quantityCard: value.totalH - value.quantityCard * value.fillingLevel()}));
+        
       } 
 
       // if elementsSet.totalH <= elementsSet.quantityCard
@@ -60,14 +69,22 @@ export class App extends Component {
         
       }
 
+      // if(this.state.pageCounter === this.state.temporary){
+      //   this.request(this.state.inputData);
+      //   return;
+      // }
+       
+
       // control, when total quantity loaded images >= "data.totalHits"
       if(this.state.pageCounter > this.state.temporary) {
         
-        this.changeState('quantityCard', 200);
+        this.changeState('quantityCard', 12);
         
         // reset property and output notification
         // elementsSet.checkData = 0;
-        this.setState(value => ({key: value.key && false}));
+
+        // delete, that new input load, else this is impossible, because key=false
+        // this.setState(value => ({key: value.key && false}));
 
         this.setState({load:  false,
         });
@@ -81,15 +98,17 @@ export class App extends Component {
         return;
       } 
 
-      this.request(this.state.inputData)
-    } 
+      
+      this.request(this.state.inputData);
        
+    } 
+
     if(prevState.inputData !== this.state.inputData) {
       
       this.setState(({
         pageCounter: 0,
         totalH: 0, 
-        quantityCard: 200,
+        quantityCard: 12,
         cards: [],
         key: true,
         open: false,
@@ -110,6 +129,7 @@ export class App extends Component {
   }
 
   autoScroll = (data) => {
+
     // get first card on page and set her to top
      document.getElementById(data).scrollIntoView({
       block: "end",
@@ -139,11 +159,10 @@ export class App extends Component {
   }
 
   getDataFromApi = async(data, counter, quantityCard) => {
-  
+   
     let url = `https://pixabay.com/api/?key=${App.API_KEY}&q=${data}&image_type=photo$orientation=horizontal&safesearch=true&page=1&per_page=${quantityCard}&page=${counter}`;
     return await axios.get(url).then(responce => {
-        // console.log(counter);
-        
+      
         return responce;
     });
 
@@ -152,7 +171,7 @@ export class App extends Component {
   // "data.totalHits" control
   loadPagesControl = (data) => {
    
-    this.changeState('quantityCard', 200);
+    // this.changeState('quantityCard', 200);
    
     //if the request data is repeate
     if(this.state.checkData === data) {
@@ -161,15 +180,13 @@ export class App extends Component {
       // "elementsSet.fillingLevel" will not accumulate further and cause an error.
       if(this.state.key) { 
 
-        // counter loaded pages
+          // counter loaded pages
         this.setState(value => ({pageCounter: value.pageCounter + 1}));
         
       }
-      console.log(this.state.pageCounter);
-      console.log(this.state.fillingLevel());
-    
       
     }
+
     // if the request data isn't repeate
     else {
      
@@ -195,7 +212,6 @@ export class App extends Component {
      
       await this.getDataFromApi(data, this.state.pageCounter, this.state.quantityCard).then(responce => {
         
-        console.log(responce);
         if(responce.data.hits.length !== 0) {
 
           if(this.state.pageCounter === 1) {
@@ -204,7 +220,7 @@ export class App extends Component {
             this.getCards(responce.data.hits);
             
             Notiflix.Notify.info(`Hooray! We found ${responce.data.totalHits} images.`);
-            
+           
           } else {
             this.getCards(responce.data.hits);
           }
@@ -220,7 +236,6 @@ export class App extends Component {
   }
 
   render() {
-    
     
     return(
 

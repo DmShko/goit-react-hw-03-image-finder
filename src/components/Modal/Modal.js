@@ -15,7 +15,7 @@ export class Modal extends Component {
 
         window.addEventListener("keydown", this.driveModal);
 
-        this.props.currentState.map(value => {
+        this.props.currentState.forEach(value => {
             if(value.id === this.props.imageOpenID) 
                 this.setState({largeImageURL: value.largeImageURL})
             }

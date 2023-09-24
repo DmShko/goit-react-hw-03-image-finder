@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { ReactComponent as IconMenu } from '../images/search-com.svg'
 
 import search from './Searchbar.module.css'
 
@@ -21,11 +22,12 @@ export class Searchbar extends Component {
     }
 
     render(){
+        // <span className="search.button-label">Search</span> row 29!!!!
         return(
             <header className={search.searchbar}>
                 <form className={search.form} onSubmit={this.formSubmit}>
                     <button type="submit" className={search.button}>
-                        <span className="search.button-label">Search</span>
+                        <IconMenu className={search.icon} width="25px" />
                     </button>
 
                     <input
