@@ -25,7 +25,7 @@ export class Searchbar extends Component {
       <header className={search.searchbar}>
         <form className={search.form} onSubmit={this.formSubmit}>
           <button type="submit" className={search.button}>
-            <IconMenu className={search.icon} width="25px" />
+            <IconMenu className={search.icon} width="25px" height="25px"/>
           </button>
 
           <input

@@ -29,17 +29,51 @@ export class App extends Component {
     cardID: '',
   };
 
+  componentDidMount() {
+    if (
+      this.state.totalH <= this.state.quantityCard
+    ) {
+      
+      this.changeState('quantityCard', 12);
+
+      this.setState({ activeButton: false });
+      
+    }
+  }
+
   componentDidUpdate(prevProps, prevState) {
+
     // scroll down, if 'activeButton' change
     if (prevState.activeButton !== this.state.activeButton) {
       // scroll only, if 'activeButton' change to 'true',
       // because, if 'activeButton' - false, she doesn't exist in DOM!!! It will be error!!
       if (this.state.activeButton === true) this.autoScroll('loadButton');
     }
+
     // visible button and hidden loader, when cards load
-    if (prevState.cards.length !== this.state.cards.length) {
+    if ((prevState.cards.length !== this.state.cards.length) && (
+      this.state.totalH >= this.state.quantityCard
+    )) {
       this.setState({ load: false, activeButton: true });
-    }
+    } 
+
+    // if elementsSet.totalH <= elementsSet.quantityCard
+    if ((prevState.cards.length !== this.state.cards.length) && (
+      this.state.totalH <= this.state.quantityCard
+    )) {
+      this.setState({ load: false,});
+
+      // if elementsSet.totalH <= elementsSet.quantityCard
+      if (
+        this.state.totalH <= this.state.quantityCard && this.state.totalH !== 0
+      ) {
+        
+        Notiflix.Notify.info(
+          "We're sorry, but you've reached the end of search results."
+        );
+        
+      }
+    } 
 
     if (
       prevState.pageCounter !== this.state.pageCounter &&
@@ -62,34 +96,16 @@ export class App extends Component {
         }));
       }
 
-      // if elementsSet.totalH <= elementsSet.quantityCard
-      if (
-        this.state.pageCounter === this.state.fillingLevel() + 2 &&
-        this.state.totalH <= this.state.quantityCard
-      ) {
-        // temporery value - indicator end data in totalH 
-        this.setState(value => ({ temporary: value.fillingLevel() }));
-      }
-
-      // if(this.state.pageCounter === this.state.temporary){
-      //   this.request(this.state.inputData);
-      //   return;
-      // }
+      
 
       // control, when total quantity loaded images >= "data.totalHits"
       if (this.state.pageCounter > this.state.temporary) {
         this.changeState('quantityCard', 12);
 
-        // reset property and output notification
-
-        // delete, that new input load, else this is impossible, because key=false
-        // this.setState(value => ({key: value.key && false}));
-
         this.setState({ load: false });
 
         this.setState({ activeButton: false });
 
-        
         Notiflix.Notify.info(
           "We're sorry, but you've reached the end of search results."
         );
@@ -99,6 +115,7 @@ export class App extends Component {
       this.request(this.state.inputData);
     }
 
+    // new input data !== previous
     if (prevState.inputData !== this.state.inputData) {
       this.setState({
         pageCounter: 0,

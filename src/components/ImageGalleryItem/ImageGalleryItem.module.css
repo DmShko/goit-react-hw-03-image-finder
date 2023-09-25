@@ -1,11 +1,12 @@
 .item {
 
-    list-style: none;
+    list-style: none; 
+    height: 200px;
+    width: calc((100vw - 200px) / 4 );
 }
 
 .img {
 
-    height: 200px;
-    width: calc((100vw - 200px) / 4 );
+    object-fit: contain;
 
 }
