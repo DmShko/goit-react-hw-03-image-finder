@@ -112,11 +112,13 @@ export class App extends Component {
         return;
       }
 
+      
       this.request(this.state.inputData);
     }
 
     // new input data !== previous
     if (prevState.inputData !== this.state.inputData) {
+      
       this.setState({
         pageCounter: 0,
         totalH: 0,
@@ -148,7 +150,9 @@ export class App extends Component {
   };
 
   changeState = (name, data) => {
-    this.setState({ [name]: data });
+
+    this.setState({ [name]: data })
+    
   };
 
   openModal = data => {
@@ -175,7 +179,7 @@ export class App extends Component {
   // "data.totalHits" control
   loadPagesControl = data => {
     // this.changeState('quantityCard', 200);
-
+    
     //if the request data is repeate
     if (this.state.checkData === data) {
       // "key" - open/close access to calc loaded pages. When total quantity loaded images >= "data.totalHits",
@@ -188,6 +192,7 @@ export class App extends Component {
 
     // if the request data isn't repeate
     else {
+      
       this.setState(value => ({ key: value.key || true }));
       // this.changeState('key', true);
       this.changeState('temporary', undefined);
